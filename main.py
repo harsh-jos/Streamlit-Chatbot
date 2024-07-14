@@ -23,7 +23,7 @@ else:
 
     def get_conversational_chain():
         prompt_template = """
-        You are a helpful chat assistant. Below is the conversation history:
+        You are a helpful chat assistant.End every answer with \n\n . Below is the conversation history:
         {history}
 
         Question: {question}
@@ -44,7 +44,7 @@ else:
         st.session_state.history += f"User: {user_question}\nBot: {response['text']}\n"
         save_chat_history(username, st.session_state.history)
 
-        st.write("Reply: ", response["text"])
+        return response["text"]
 
     def login():
         st.title("Login")
@@ -69,46 +69,40 @@ else:
 
     def main():
         st.set_page_config(page_title="Chatbot from Kishiva")
-        
-        # Display title and buttons in the same row
-        col1, col2, col3 = st.columns([5, 1, 1])
-        
-        with col1:
-            st.header("Chat with Gemini")
-        
-        with col2:
-            if st.button("Clear History", key="clear_history"):
-                clear_history(st.session_state.username)
-                
-        with col3:
-            if st.button("Logout", key="logout"):
-                logout()
-                
+
         if "logged_in" not in st.session_state:
             st.session_state.logged_in = False
             st.session_state.history = ""
             st.session_state.username = ""
 
         if st.session_state.logged_in:
-            # Layout with columns for Ask button and User Input
-            col1, col2 = st.columns([1, 2])
-
+            col1, col2, col3 = st.columns([5, 1, 1])
+            
             with col1:
-                st.write("### User Input")
+                st.header(f"Welcome, {st.session_state.username}")
+            
+            with col2:
+                if st.button("Clear History", key="clear_history"):
+                    clear_history(st.session_state.username)
+                
+            with col3:
+                if st.button("Logout", key="logout"):
+                    logout()
+
+            # Layout with single column for history, current answer, and user input
+            
+            with col1:
+                st.write("### Input")
                 user_question = st.text_input("Ask a Question")
 
-                if st.button("Ask", key="ask") and user_question:
-                    user_input(user_question, st.session_state.username)
+            if st.button("Ask", key="ask") and user_question:
+                answer = user_input(user_question, st.session_state.username)
+                #st.write("### Current Answer")
+                st.write(answer)
 
-            with col2:
-                st.write("### Chat History")
-                if "history" in st.session_state:
-                    chat_entries = st.session_state.history.strip().split("\n")
-                    for entry in chat_entries:
-                        if entry.startswith("User:"):
-                            st.markdown(f"<div style='text-align: right; color: green;'>{entry[6:]}</div>", unsafe_allow_html=True)
-                        elif entry.startswith("Bot:"):
-                            st.markdown(f"<div style='text-align: left; color: blue;'>{entry[5:]}</div>", unsafe_allow_html=True)
+            st.write("### Chat History")
+            if "history" in st.session_state:
+                st.write(st.session_state.history.strip())
 
         else:
             mode = st.sidebar.selectbox("Mode", ["Login", "Register"])
