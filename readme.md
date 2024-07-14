@@ -97,4 +97,4 @@ There are at least 2 ways deploy our app to cloud.
 - This method is not recommended for production grade applications.
 
 ## Note
-I have added the demo video named "demo" in this repository.  
+Here's the link to demo video: https://drive.google.com/file/d/1ufGY7ETL74q4iWDaCJsGxQyijZn_QugR/view?usp=drive_link  
